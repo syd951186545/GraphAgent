@@ -44,10 +44,10 @@
 
 实验过程：
 -----------
-1. 配置Configuration/config
+1. 配置Configuration/config.py
     - 注：“manually”标签请手动配置，数据集Name，编码方式，编码维度，以及训练参数等
-2. 通过Run/embedding 对配置数据进行编码
-3. 编写Run/train 进行训练，主要说明如下：
+2. 运行Run/embedding.py 对配置数据进行编码
+3. 运行Run/train.py 进行训练，（可自编写）主要说明如下：
     - env = Environment(GRAPH)： 调用Environment中的环境类，并需要初始化训练的数据
     - agentP = DQN(None)： 调用Agent训练算法（为主要过程，可自编写）,参数为加载模型  
     - train：train函数流程为DQN算法基本流程：
@@ -55,3 +55,4 @@
         - env.render() 打印状态信息
         - env.step() 智能体agentP从env给出的初始状态开始，在环境中探索。探索方法可选：“random”“MCTS”“DQN_self”“Policy_MCTS”。返回值为trajectory和reward
     - agentP.store_transition(): 智能体agentP将trajectory和reward存入路径存储池带训练，满足一定数量后开始训练
+4. 运行Run/test.py 进行测试，测试过程同3类似，（可自编写）初始化数据为测试数据，测试过程无需再调用updata更新智能体Agent
