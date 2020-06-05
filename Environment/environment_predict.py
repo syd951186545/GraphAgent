@@ -17,7 +17,7 @@ class Environment:
         # 读取self.Graph = nx.read_gpickle("./data/DBLP_labeled.Graph")
         # 或者直接获取返回值buildNetworkGraph.get_graph()
         self.Graph = Graph
-
+        self._render = False
         # 初始化属性，current_node,
         self.current_node = None
 
@@ -73,7 +73,7 @@ class Environment:
             Qsa = Q if node_t.get_state().current_node == -1 else 0
             state_tup = node_t.get_state().state_tup
             reward = 1 if state_tup[-1] == -1 and state_tup[-2] == root.get_state().target_node else 0
-
+            if self._render: print(state_tup, reward)
             return state_tup, reward
         else:
             if method == "DQN_self":
@@ -88,11 +88,12 @@ class Environment:
                         state_tup.append(action)
                         break
                 reward = 1 if state_tup[-1] == -1 and state_tup[-2] == root.get_state().target_node else 0
+                if self._render: print(state_tup, reward)
                 return state_tup, reward
             return
 
     def render(self):
-        print(self.path)
+        self._render = True
 
     def ComputeReward(self, action):
         return

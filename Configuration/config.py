@@ -17,7 +17,7 @@ torch.backends.cudnn.deterministic = True  # cudnn
 """                         ALL DATA SET NAME YOU CAN CHOOSE            """
 # -------------------------------------------------------------------------
 _Names = ["AthleteHomeStadium/", "AthletePlaysForTeam/", "AthletePlaysInLeague/",
-          "AthletePlaysSport/","OrganizationHeadQuarteredInCity/",
+          "AthletePlaysSport/", "OrganizationHeadQuarteredInCity/",
           "OrganizationHiredPerson/", "PersonBornInLocation/",
           "PersonLeadsOrganization/", "TeamPlaysSport/", "WorksFor/", "WN18RR/"
           ]
@@ -37,23 +37,26 @@ entity_embedding_method = "node2vec"
 relation_embedding_method = "random"
 
 """Automatic"""
-dataSet = root_dir + "/RawDataSets/"+Name
-transed_dataSet = root_dir + "/PreDataSets/tranedFile/"+Name
+dataSet = root_dir + "/RawDataSets/" + Name
+transed_dataSet = root_dir + "/PreDataSets/tranedFile/" + Name
 
-embedding_dir = root_dir + "/PreDataSets/Embeddings/"+Name  # embedding 存放目录,以及存放文件命名（统一标准）
+embedding_dir = root_dir + "/PreDataSets/Embeddings/" + Name  # embedding 存放目录,以及存放文件命名（统一标准）
 if not os.path.exists(embedding_dir): os.mkdir(embedding_dir)
-entity_embedding_filename = root_dir + "/PreDataSets/Embeddings/" + Name + "/entity"+str(entity_dim)+"."+entity_embedding_method
-relation_embedding_filename = root_dir + "/PreDataSets/Embeddings/" + Name + "/relation"+str(relation_dim)+"."+relation_embedding_method
+entity_embedding_filename = root_dir + "/PreDataSets/Embeddings/" + Name + "/entity" + str(
+    entity_dim) + "." + entity_embedding_method
+relation_embedding_filename = root_dir + "/PreDataSets/Embeddings/" + Name + "/relation" + str(
+    relation_dim) + "." + relation_embedding_method
 
 # -------------------------------------------------------------------------
 """                                    TRAIN                             """
 # -------------------------------------------------------------------------
 """Manually"""
-num_episodes = 64*75441  # 训练回合数(总游走路径数)
+num_episodes = 64 * 75441  # 训练回合数(总游走路径数)
 pre_model = None  # 加载模型torch state_dic
 # 经验池中，训练数据的获取方法（游走策略），1，蒙特卡洛树搜索“MCTS”2.DQN策略游走“DQN_self” 3.随机游走“random”4."Policy_MCTS"
-walk_method = "MCTS"
-MAX_ROUND_NUMBER = 3-1  # MCTS中每个初始节点最大的游走步数(+1),同时限制了TCN的输入序列长度，TCN输出层最后一个元素的感受野：2kd-2d-k+2
+walk_method = "Policy_MCTS"
+MAX_ROUND_NUMBER = 5 - 1  # MCTS中每个初始节点最大的游走步数(+1),同时限制了TCN的输入序列长度，TCN输出层最后一个元素的感受野：2kd-2d-k+2,根据游走的最长路径调整TCN的层数
+tcn_layers = [entity_dim, 2 * entity_dim, 2 * entity_dim, entity_dim]
 # MCTS中每个给定节点的探索次数（其中优先探索未探索过的子节点，随后根据PUCT算法探索）;设置该值时，可以参考网络的度情况，Script/Tools中有相应工具
 computation_budget = 32
 # MCTS中PUCT算法的探索系数，C越大越偏向于广度搜索
@@ -62,30 +65,29 @@ C = 1.44
 """ DQN SET """
 # --------------------------------------
 """Manually"""
-capacity = 800
+capacity = 400
 learning_rate = 1e-4
 batch_size = 10
 gamma = 0.99
 decay = 0.999
-net_replace = 800
-
+net_replace = 400
 
 # --------------------------------------
 """ Model and visualization SET """
 # --------------------------------------
 """Automatic"""
 # 模型 存放路径
-model_dir = root_dir + "/SavedModel/"+Name
+model_dir = root_dir + "/SavedModel/" + Name
 # 模型结构图 存放路径
 modelGraph_dir = root_dir + "/Model/modelGraph/"
 
-Summary_dir = root_dir + "/Result/"+Name
-Summary_dir_test = root_dir + "/Result/"+Name+"/summary_test/"
+Summary_dir = root_dir + "/Result/" + Name
+Summary_dir_test = root_dir + "/Result/" + Name + "/summary_test/"
 
 # -------------------------------------------------------------------------
 """                                    TEST                             """
 # -------------------------------------------------------------------------
 """Manually"""
 walk_method_predict = "Policy_MCTS"
-computation_budget_predict = 64
-predict_C = 1.96
+computation_budget_predict = 32
+predict_C = 1.44

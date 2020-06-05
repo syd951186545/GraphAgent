@@ -24,7 +24,7 @@ def PUCB(node, Policy_net, is_exploration, output=False):  # 若子节点都扩�
         # if node.get_visit_times() < 1:
         #     print(node)
         #     node.set_visit_times(1)
-        right = math.sqrt(node.get_visit_times()) / sub_node.get_visit_times()
+        right = math.sqrt(node.get_visit_times()) / (1+sub_node.get_visit_times())
 
         Qsa = Qsa_values.squeeze(0)[action_candidate.index(sub_node.state.current_node)]
         score = left + C * math.sqrt(Qsa) * right

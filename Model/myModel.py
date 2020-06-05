@@ -24,7 +24,7 @@ class myModel(nn.Module):
         # (kernel,dropout,input_channel,layers_channel)
         # 最后一层的感受野大小由kernel和d决定:2kd-2d-k+2,d=1,2,4,8
         self.state_encoder = TCN_encoder(3, 0.1, config.entity_dim,
-                                         [config.entity_dim, 2 * config.entity_dim, config.entity_dim])
+                                         [config.entity_dim, 2 * config.entity_dim, 2 * config.entity_dim, config.entity_dim])
         self.policy_net = PolicyNet()
 
     def get_index(self, num_neighbors, action_index):

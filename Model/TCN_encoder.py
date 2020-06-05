@@ -13,7 +13,7 @@ class TCN_encoder(nn.Module):
         self.state_index = [-1]
 
     def get_state_index(self, node_num):
-        self.state_index = [-1 - 3 * i for i in range(node_num - 1, -1, -1)]
+        self.state_index = [3 * i for i in range(node_num)]
 
     def forward(self, inputs):
         """Inputs have to have dimension (N, C_in, L_in)"""

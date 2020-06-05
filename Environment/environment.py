@@ -17,7 +17,7 @@ class Environment:
         # 读取self.Graph = nx.read_gpickle("./data/DBLP_labeled.Graph")
         # 或者直接获取返回值buildNetworkGraph.get_graph()
         self.Graph = Graph
-        self.render = False
+        self._render = False
         # 初始化属性，current_node,
         self.current_node = None
 
@@ -78,7 +78,7 @@ class Environment:
                 else:
                     break
             self.update(root)  # 更新root的q和 v的值
-            if self.render: print(state_tup, reward)
+            if self._render: print(state_tup, reward)
             return state_tup, reward
         if method == "DQN_self":
             if PolicyChooseNet is None: raise Exception("please give PolicyNet as input or use random")
@@ -91,7 +91,7 @@ class Environment:
                 else:
                     break
             reward = 1 if state_tup[-1] == root.state.target_node else 0
-            if self.render: print(state_tup, reward)
+            if self._render: print(state_tup, reward)
             return state_tup, reward
         if method == "random":
             state = root.state
@@ -99,11 +99,11 @@ class Environment:
             while state.is_terminal():
                 state = state.get_next_state_with_random_choice()
                 reward = state.compute_reward
-            if self.render: print(state.state_tup, reward)
+            if self._render: print(state.state_tup, reward)
             return state.state_tup, reward
 
     def render(self):
-        self.render = True
+        self._render = True
 
     def ComputeReward(self, action):
         return

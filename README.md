@@ -29,7 +29,7 @@
 * PreDataSets：处理后的数据存放，其中主要分为两个文件夹：
     - embedding: 文件包含实体和关系的编码文件，其中包含不同数据集的编码
     - transdFile: 文件包含编码过程中的中间转换文件（当采用随机编码和transE编码时产生）
-* RawDataSets：原始数据集，按统一格式处理过（注：M-walk作者处理）
+* RawDataSets：原始数据集，按统一格式处理过（注：M-walk作者处理）原始数据1G左右的文本，因此此处不上传仅提供地址，下载即可直接使用
 * Result：实验结果，按数据集的名称存放tensorboardX的散点图，包含训练过程中的误差变化，回报率变化等。
 * SavedModel：模型保存的位置，DQN算法定义时，提供加载初始化方法
 * Script：各类脚本代码，主要包含embedding，构建graph和模型输入转换

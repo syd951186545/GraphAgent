@@ -16,14 +16,13 @@ def _Max(matrix):
     return matrix[torch.argmax(matrix, dim=0), torch.LongTensor(range(matrix.shape[1]))].view(1, matrix.shape[1])
 
 
-class myModel(nn.Module):
+class deepAgent(nn.Module):
     def __init__(self):
-        super(myModel, self).__init__()
+        super(deepAgent, self).__init__()
         self.num_neighbors, self.action_index = None, None
         self.action_encoder = Action_encoder()
         # (kernel,dropout,input_channel,layers_channel)
-        self.state_encoder = TCN_encoder(3, 0.1, config.entity_dim,
-                                         [config.entity_dim, 4 * config.entity_dim, config.entity_dim])
+        self.tcn_encoder = TCN_encoder(3, 0.1, config.entity_dim, config.tcn_layers)
         self.policy_net = PolicyNet()
 
     def get_index(self, num_neighbors, action_index):
@@ -60,6 +59,10 @@ class myModel(nn.Module):
         else:
             HAts = torch.cat((HAts, HAt), 0)
             state_seq = torch.cat((state_seq, nodes[[-1]]), 0)
+        # padding for length
+        padding = 3 * config.MAX_ROUND_NUMBER + 1 - len(state_seq)
+        if padding > 0:
+            state_seq = torch.cat((state_seq, torch.zeros((padding, nodes.size()[1]))), 0)
 
         # channel first trans
         state_seq = state_seq.transpose(0, 1).contiguous()
@@ -67,8 +70,8 @@ class myModel(nn.Module):
 
         # TCN encoding
         # --------------------------------------------
-        self.state_encoder.get_state_index(len(nodes))
-        hs = self.state_encoder(state_seq)
+        self.tcn_encoder.get_state_index(len(nodes))
+        hs = self.tcn_encoder(state_seq)
         # channel back
         hs = hs.squeeze(0).transpose(1, 0).contiguous()
 

@@ -10,7 +10,7 @@ from torch.utils.data.sampler import BatchSampler, SubsetRandomSampler
 from tensorboardX import SummaryWriter
 
 from Configuration import config
-from Model.myModel import myModel
+from Agent.deepAgent import deepAgent
 from Script.state_tup2input import transInput
 from Script.Tools import _give_index
 
@@ -30,7 +30,7 @@ class DQN:
 
     def __init__(self, pre_model):
         super(DQN, self).__init__()
-        self.target_net, self.act_net = myModel(), myModel()
+        self.target_net, self.act_net = deepAgent(), deepAgent()
         if pre_model:
             self.act_net.load_state_dict(torch.load(pre_model))
 
@@ -82,22 +82,25 @@ class DQN:
                     select_index = [index + 1 for index in action_index]
                     Q_value1 = _give_index(Q_values1, select_index)
                     with torch.no_grad():
-                        # Double DQN
-                        self.target_net.get_index(num_neighbors, action_index)
-                        # next_state without the first state
-                        Q_values2 = self.target_net(NEs, nodes, query)
-                        if len(Q_values2) > 1:
-                            Q_values2 = Q_values2[1:]
-                            select_index = []
-                            for i, qs in enumerate(Q_values1):
-                                if i != 0:
-                                    select_index.append(qs.max(1)[1])
+                        # DQN with MC
+                        target_v = reward.expand(1, len(Q_value1))
 
-                            Q_value2 = _give_index(Q_values2, select_index)
-                            target_v = 0*reward + self.gamma * Q_value2
-                            target_v = torch.cat((target_v, reward.unsqueeze(0)), 0)
-                        else:
-                            target_v = reward
+                        # Double DQN with TD
+                        # self.target_net.get_index(num_neighbors, action_index)
+                        # # next_state without the first state
+                        # Q_values2 = self.target_net(NEs, nodes, query)
+                        # if len(Q_values2) > 1:
+                        #     Q_values2 = Q_values2[1:]
+                        #     select_index = []
+                        #     for i, qs in enumerate(Q_values1):
+                        #         if i != 0:
+                        #             select_index.append(qs.max(1)[1])
+                        #
+                        #     Q_value2 = _give_index(Q_values2, select_index)
+                        #     target_v = reward + self.gamma * Q_value2
+                        #     target_v = torch.cat((target_v, reward.unsqueeze(0)), 0)
+                        # else:
+                        #     target_v = reward
 
                         # Nature DQN
                         # self.target_net.get_index(num_neighbors, action_index)
@@ -115,4 +118,4 @@ class DQN:
                     self.target_net.load_state_dict(self.act_net.state_dict())
                     if not os.path.exists(config.model_dir): os.mkdir(config.model_dir)
                     torch.save(self.act_net.state_dict(),
-                               config.model_dir + "act_net" + str(self.update_batch//config.net_replace) + ".model")
+                               config.model_dir + "act_net" + str(self.update_batch // config.net_replace) + ".model")

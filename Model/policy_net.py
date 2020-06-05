@@ -25,6 +25,7 @@ class PolicyNet(nn.Module):
         # self.softmax = nn.Softmax()
         self.sigmoid = nn.Sigmoid()
 
+        self.Relu = nn.ReLU()
     def get_index(self, num_neighbors):
         self.num_neighbors = num_neighbors
 
@@ -45,7 +46,7 @@ class PolicyNet(nn.Module):
             # Q_values.append(self.sigmoid(torch.cat((u0[i].unsqueeze(0), uk), 1)))
             # 采用向量乘法
             uk = tempHS[[i]].mm(hats[index:index + self.num_neighbors[i], ].t())
-            Q_values.append(self.sigmoid(torch.cat((u0[i].unsqueeze(0), uk), 1)))
+            Q_values.append(self.Relu(torch.cat((u0[i].unsqueeze(0), uk), 1)))
         # 如果需要返回 action and prob
         # action_probilities = self.softmax(torch.cat((u0, uks), 1))
         # action_node = self.action_candidate[action_probilities.argmax()]
